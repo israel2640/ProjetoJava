@@ -2,6 +2,10 @@ package com.seudominio;
 
 import com.seudominio.model.Carro;
 import com.seudominio.model.Cliente;
+import com.seudominio.repository.CarroRepository;
+import com.seudominio.repository.CarroRepositoryImpl;
+import com.seudominio.repository.ClienteRepository;
+import com.seudominio.repository.ClienteRepositoryImpl;
 import com.seudominio.service.CarroService;
 import com.seudominio.service.CarroServiceImpl;
 import com.seudominio.service.ClienteService;
@@ -12,8 +16,13 @@ import java.util.Scanner;
 public class MainApp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        CarroService carroService = new CarroServiceImpl();
-        ClienteService clienteService = new ClienteServiceImpl();
+
+        CarroRepository carroRepository = new CarroRepositoryImpl();
+        ClienteRepository clienteRepository = new ClienteRepositoryImpl();
+
+        CarroService carroService = new CarroServiceImpl(carroRepository, clienteRepository);
+        ClienteService clienteService = new ClienteServiceImpl(clienteRepository);
+
         int opcao;
 
         do {
@@ -59,7 +68,7 @@ public class MainApp {
             switch (opcaoCarro) {
                 case 1:
                     System.out.print("Modelo: ");
-                    scanner.nextLine(); // Consumir newline
+                    scanner.nextLine();
                     String modelo = scanner.nextLine();
                     System.out.print("Placa: ");
                     String placa = scanner.nextLine();
@@ -76,19 +85,25 @@ public class MainApp {
                             if (c.isAlugado()) {
                                 Cliente cliente = clienteService.buscarClientePorId(c.getIdClienteAlugado());
                                 if (cliente != null) {
-                                    infoAdicional = " (Alugado por: " + cliente.getNome() + " | Aluguel: " + c.getDataAluguel() + " | Entrega: " + c.getDataEntrega() + ")";
+                                    infoAdicional = " (Alugado por: " + cliente.getNome() + " | Aluguel: "
+                                            + c.getDataAluguel() + " | Entrega: " + c.getDataEntrega() + ")";
                                 } else {
-                                    infoAdicional = " (Alugado por cliente ID desconhecido: " + c.getIdClienteAlugado() + " | Aluguel: " + c.getDataAluguel() + " | Entrega: " + c.getDataEntrega() + ")";
+                                    infoAdicional = " (Alugado por cliente ID desconhecido: " + c.getIdClienteAlugado()
+                                            + " | Aluguel: " + c.getDataAluguel() + " | Entrega: " + c.getDataEntrega()
+                                            + ")";
                                 }
                             }
-                            System.out.println("ID: " + c.getId() + " | Modelo: " + c.getModelo() + " | Placa: " + c.getPlaca() + " | Status: " + (c.isAlugado() ? "Alugado" : "Disponível") + infoAdicional);
+                            System.out.println("ID: " + c.getId() + " | Modelo: " + c.getModelo() + " | Placa: "
+                                    + c.getPlaca() + " | Status: " + (c.isAlugado() ? "Alugado" : "Disponível")
+                                    + infoAdicional);
                         }
                     }
                     break;
                 case 3:
                     System.out.print("ID do carro para excluir: ");
                     int idExc = scanner.nextInt();
-                    System.out.println(carroService.excluirCarro(idExc) ? "Carro excluído com sucesso!" : "Erro ao excluir carro. ID não encontrado ou carro alugado.");
+                    System.out.println(carroService.excluirCarro(idExc) ? "Carro excluído com sucesso!"
+                            : "Erro ao excluir carro. ID não encontrado ou carro alugado.");
                     break;
                 case 0:
                     System.out.println("Voltando ao Menu Principal...");
@@ -114,7 +129,7 @@ public class MainApp {
             switch (opcaoCliente) {
                 case 1:
                     System.out.print("Nome: ");
-                    scanner.nextLine(); // Consumir newline
+                    scanner.nextLine();
                     String nome = scanner.nextLine();
                     System.out.print("CPF: ");
                     String cpf = scanner.nextLine();
@@ -148,7 +163,8 @@ public class MainApp {
                 case 4:
                     System.out.print("ID do cliente para excluir: ");
                     int idClienteExc = scanner.nextInt();
-                    System.out.println(clienteService.excluirCliente(idClienteExc) ? "Cliente excluído com sucesso!" : "Erro ao excluir cliente. Verifique o ID ou se ele possui carros alugados.");
+                    System.out.println(clienteService.excluirCliente(idClienteExc) ? "Cliente excluído com sucesso!"
+                            : "Erro ao excluir cliente. Verifique o ID ou se ele possui carros alugados.");
                     break;
                 case 0:
                     System.out.println("Voltando ao Menu Principal...");
@@ -165,7 +181,7 @@ public class MainApp {
             System.out.println("\n=== GERENCIAR ALUGUÉIS ===");
             System.out.println("1. Alugar carro");
             System.out.println("2. Devolver carro");
-            System.out.println("3. Relatório de Aluguéis Ativos"); // Nova opção de relatório
+            System.out.println("3. Relatório de Aluguéis Ativos");
             System.out.println("0. Voltar ao Menu Principal");
             System.out.print("Escolha: ");
             opcaoAluguel = scanner.nextInt();
@@ -176,7 +192,7 @@ public class MainApp {
                     int idCarroAlugar = scanner.nextInt();
                     System.out.print("ID do cliente alugador: ");
                     int idClienteAlugar = scanner.nextInt();
-                    scanner.nextLine(); // Consumir newline
+                    scanner.nextLine();
                     System.out.print("Data do aluguel (DD/MM/AAAA): ");
                     String dataAluguel = scanner.nextLine();
                     System.out.print("Data prevista de entrega (DD/MM/AAAA): ");
@@ -185,15 +201,17 @@ public class MainApp {
                     if (carroService.alugarCarro(idCarroAlugar, idClienteAlugar, dataAluguel, dataEntrega)) {
                         System.out.println("Carro alugado com sucesso!");
                     } else {
-                        System.out.println("Erro ao alugar carro. Verifique os IDs do carro e do cliente, se o carro já está alugado, ou as datas.");
+                        System.out.println(
+                                "Erro ao alugar carro. Verifique os IDs do carro e do cliente, se o carro já está alugado, ou as datas.");
                     }
                     break;
                 case 2:
                     System.out.print("ID do carro para devolver: ");
                     int idDevolver = scanner.nextInt();
-                    System.out.println(carroService.devolverCarro(idDevolver) ? "Carro devolvido com sucesso!" : "Erro ao devolver carro. Verifique o ID ou se não está alugado.");
+                    System.out.println(carroService.devolverCarro(idDevolver) ? "Carro devolvido com sucesso!"
+                            : "Erro ao devolver carro. Verifique o ID ou se não está alugado.");
                     break;
-                case 3: // Relatório de Aluguéis Ativos
+                case 3:
                     System.out.println("\n=== RELATÓRIO DE ALUGUÉIS ATIVOS ===");
                     Carro[] carrosAlugados = carroService.listarCarrosAlugados();
                     if (carrosAlugados.length == 0) {
@@ -214,7 +232,8 @@ public class MainApp {
                                 System.out.println("  Telefone: " + cliente.getTelefone());
                                 System.out.println("  Endereço: " + cliente.getEndereco());
                             } else {
-                                System.out.println("  Cliente não encontrado (ID: " + carro.getIdClienteAlugado() + ")");
+                                System.out
+                                        .println("  Cliente não encontrado (ID: " + carro.getIdClienteAlugado() + ")");
                             }
                             System.out.println("------------------------------------");
                         }

@@ -5,7 +5,7 @@ import com.seudominio.model.Cliente;
 import com.seudominio.repository.CarroRepository;
 import com.seudominio.repository.CarroRepositoryImpl;
 import com.seudominio.repository.ClienteRepository;
-import com.seudominio.repository.ClienteRepositoryImpl;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +15,10 @@ public class CarroServiceImpl implements CarroService {
     private ClienteRepository clienteRepositorio;
     private int idCounter;
 
-    public CarroServiceImpl() {
-        this.carroRepositorio = new CarroRepositoryImpl();
-        this.clienteRepositorio = new ClienteRepositoryImpl();
+
+    public CarroServiceImpl(CarroRepository carroRepositorio, ClienteRepository clienteRepositorio) {
+        this.carroRepositorio = carroRepositorio;
+        this.clienteRepositorio = clienteRepositorio;
 
         Carro[] existingCars = carroRepositorio.listarTodos();
         if (existingCars.length > 0) {
@@ -33,13 +34,13 @@ public class CarroServiceImpl implements CarroService {
         }
     }
 
+
     @Override
     public void cadastrarCarro(String modelo, String placa) {
         if (carroRepositorio.existePlaca(placa)) {
             System.out.println("Erro: Já existe um carro com esta placa. Por favor, use uma placa única.");
             return;
         }
-
         carroRepositorio.salvar(new Carro(idCounter++, modelo, placa));
         System.out.println("Carro cadastrado com sucesso!");
     }
@@ -61,12 +62,12 @@ public class CarroServiceImpl implements CarroService {
             return false;
         }
 
+
         Cliente cliente = clienteRepositorio.buscarPorId(idCliente);
         if (cliente == null) {
             System.out.println("Erro: Cliente com ID " + idCliente + " não encontrado. Cadastre o cliente primeiro.");
             return false;
         }
-
 
         if (dataAluguel == null || dataAluguel.trim().isEmpty() || dataEntrega == null || dataEntrega.trim().isEmpty()) {
             System.out.println("Erro: Data de Aluguel e Data de Entrega são obrigatórias.");
