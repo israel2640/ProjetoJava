@@ -1,0 +1,27 @@
+MANUAL DE INSTRUÇÃO
+
+PASSO 1
+=== MENU PRINCIPAL ===
+Escolha:2. Gerenciar Clientes
+
+=== GERENCIAR CLIENTES ===
+Escolha: 1. Cadastrar cliente
+
+
+
+PASSO 2
+=== MENU PRINCIPAL ===
+Escolha: 1. Gerenciar Carros
+
+=== GERENCIAR CARROS ===
+Escolha: 1. Cadastrar carro
+
+
+
+PASSO 3
+=== MENU PRINCIPAL ===
+Escolha:3. Gerenciar Aluguéis
+
+=== GERENCIAR ALUGUÉIS ===
+Escolha:1. Alugar carro
+Escolha: 3. Relatório de Aluguéis Ativos
